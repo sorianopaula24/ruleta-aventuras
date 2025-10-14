@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Aventuras Familiares 365</title>
+    <meta name="description" content="Deja que la suerte elija tu próxima aventura familiar. 365 actividades para conectar en familia.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #4a148c;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sparkle {
+            font-size: 2rem;
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #5e35b1;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .module-filter {
+            margin-bottom: 30px;
+        }
+
+        .module-filter h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .module-btn {
+            padding: 20px 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .module-btn.active {
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 8px solid #7b1fa2;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            background: conic-gradient(
+                from 0deg,
+                #FF6B6B 0deg 51.43deg,
+                #4ECDC4 51.43deg 102.86deg,
+                #FFE66D 102.86deg 154.29deg,
+                #95E1D3 154.29deg 205.71deg,
+                #A8E6CF 205.71deg 257.14deg,
+                #FFDAC1 257.14deg 308.57deg,
+                #B5EAD7 308.57deg 360deg
+            );
+            position: relative;
+        }
+
+        .wheel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 70%);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .wheel-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .wheel-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #7b1fa2;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 35px solid #f44336;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+            z-index: 20;
+        }
+
+        .spin-btn {
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ec407a 0%, #7b1fa2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spin-btn:hover:not(:disabled) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .spin-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .spin-icon {
+            font-size: 1.5rem;
+            display: inline-block;
+        }
+
+        .spin-icon.spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .result {
+            animation: bounceIn 0.6s ease-out;
+            border: 4px solid;
+            text-align: center;
+            padding: 40px;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .result h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-number {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-module {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .result-examples {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .result-examples p {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .result-examples .examples {
+            color: #333;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            color: #5e35b1;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .wheel {
+                width: 250px;
+                height: 250px;
+            }
+
+            .wheel-center {
+                width: 160px;
+                height: 160px;
+            }
+
+            .wheel-icon {
+                font-size: 2rem;
+            }
+
+            .wheel-text {
+                font-size: 1.2rem;
+            }
+
+            .module-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="sparkle">✨</span>
+                Ruleta de Aventuras
+                <span class="sparkle">✨</span>
+            </h1>
+            <p class="subtitle">¡Deja que la suerte elija tu próxima aventura familiar! 🎲</p>
+            <p style="font-size: 0.9rem; margin-top: 10px; color: #7b1fa2;">365 actividades para conectar en familia</p>
+        </div>
+
+        <div class="card module-filter">
+            <h3>Elige un módulo o deja que sea sorpresa</h3>
+            <div class="module-grid" id="moduleGrid"></div>
+        </div>
+
+        <div class="card">
+            <div class="wheel-container">
+                <div class="wheel-wrapper">
+                    <div class="pointer"></div>
+                    <div class="wheel" id="wheel">
+                        <div class="wheel-center">
+                            <div class="wheel-icon">✨</div>
+                            <div class="wheel-text">¡Gira!</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="spin-btn" id="spinBtn">
+                    <span class="spin-icon" id="spinIcon">🎯</span>
+                    <span id="btnText">¡Girar Ruleta!</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="resultContainer"></div>
+
+        <div class="footer">
+            <p id="activityCount">🎯 365 actividades disponibles</p>
+            <p style="margin-top: 15px; font-size: 0.75rem;">© 2025 Guía 365 - Kit de Actividades Para Conectar en Familia</p>
+        </div>
+    </div>
+
+    <script>
+        const modules = [
+            { 
+                id: 'ae', 
+                name: 'Actividades Express', 
+                icon: '⚡', 
+                color: '#FF6B6B', 
+                range: [1, 39],
+                examples: ['Pelota Viajera', 'Sombras Mágicas', 'Torre de Vasos']
+            },
+            { 
+                id: 'mch', 
+                name: 'Misiones en el Hogar', 
+                icon: '🏠', 
+                color: '#4ECDC4', 
+                range: [40, 93],
+                examples: ['Mini Chef por un Día', 'Guardián de las Plantas', 'Inspector de Juguetes']
+            },
+            { 
+                id: 'jec', 
+                name: 'Emociones y Conexión', 
+                icon: '❤️', 
+                color: '#FFE66D', 
+                range: [94, 154],
+                examples: ['El Semáforo de las Emociones', 'La Caja del Perdón', 'Río de Palabras Bonitas']
+            },
+            { 
+                id: 'tcp', 
+                name: 'Tecnología con Propósito', 
+                icon: '💻', 
+                color: '#95E1D3', 
+                range: [155, 213],
+                examples: ['Podcast Familiar', 'Mini Documentales', 'Quiz Digital']
+            },
+            { 
+                id: 'aal', 
+                name: 'Aventuras al Aire Libre', 
+                icon: '🌲', 
+                color: '#A8E6CF', 
+                range: [214, 269],
+                examples: ['Mapa del Tesoro Natural', 'Safari de Colores', 'Hotel de Insectos']
+            },
+            { 
+                id: 'mps', 
+                name: 'Mini Proyectos', 
+                icon: '📅', 
+                color: '#FFDAC1', 
+                range: [270, 335],
+                examples: ['Picnic Literario', 'Día del Inventor', 'Festival de Talentos']
+            },
+            { 
+                id: 'pc', 
+                name: 'Pequeños Científicos', 
+                icon: '🧪', 
+                color: '#B5EAD7', 
+                range: [336, 365],
+                examples: ['Volcán Burbujeante', 'Globo Saltarín', 'Lámpara de Lava']
+            }
+        ];
+
+        let selectedModule = 'all';
+        let spinning = false;
+        let rotation = 0;
+
+        const moduleGrid = document.getElementById('moduleGrid');
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const spinIcon = document.getElementById('spinIcon');
+        const btnText = document.getElementById('btnText');
+        const resultContainer = document.getElementById('resultContainer');
+        const activityCount = document.getElementById('activityCount');
+
+        // Create module buttons
+        const surpriseBtn = document.createElement('button');
+        surpriseBtn.className = 'module-btn active';
+        surpriseBtn.innerHTML = '<div style="font-size: 1.5rem;">🎲</div><div>Sorpresa</div>';
+        surpriseBtn.onclick = () => selectModule('all');
+        moduleGrid.appendChild(surpriseBtn);
+
+        modules.forEach(module => {
+            const btn = document.createElement('button');
+            btn.className = 'module-btn';
+            btn.innerHTML = `<div style="font-size: 1.5rem;">${module.icon}</div><div style="text-align: center; font-size: 0.85rem;">${module.name}</div>`;
+            btn.onclick = () => selectModule(module.id);
+            btn.dataset.moduleId = module.id;
+            moduleGrid.appendChild(btn);
+        });
+
+        function selectModule(moduleId) {
+            selectedModule = moduleId;
+            document.querySelectorAll('.module-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.backgroundColor = '';
+            });
+
+            if (moduleId === 'all') {
+                surpriseBtn.classList.add('active');
+                surpriseBtn.style.backgroundColor = '#7b1fa2';
+                activityCount.textContent = '🎯 365 actividades disponibles';
+            } else {
+                const module = modules.find(m => m.id === moduleId);
+                const btn = document.querySelector(`[data-module-id="${moduleId}"]`);
+                btn.classList.add('active');
+                btn.style.backgroundColor = module.color;
+                const count = module.range[1] - module.range[0] + 1;
+                activityCount.textContent = `🎯 ${count} actividades en este módulo`;
+            }
+        }
+
+        function getRandomActivity() {
+            let min, max;
+            
+            if (selectedModule === 'all') {
+                min = 1;
+                max = 365;
+            } else {
+                const module = modules.find(m => m.id === selectedModule);
+                [min, max] = module.range;
+            }
+            
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getModuleForActivity(activityNum) {
+            return modules.find(m => activityNum >= m.range[0] && activityNum <= m.range[1]);
+        }
+
+        function spinWheel() {
+            if (spinning) return;
+            
+            spinning = true;
+            spinBtn.disabled = true;
+            spinIcon.classList.add('spinning');
+            btnText.textContent = '¡Girando!';
+            resultContainer.innerHTML = '';
+            
+            const spins = 5 + Math.random() * 3;
+            rotation += (360 * spins) + Math.random() * 360;
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            
+            setTimeout(() => {
+                const activityNumber = getRandomActivity();
+                const module = getModuleForActivity(activityNumber);
+                showResult(activityNumber, module);
+                
+                spinning = false;
+                spinBtn.disabled = false;
+                spinIcon.classList.remove('spinning');
+                btnText.textContent = '¡Girar Ruleta!';
+            }, 3000);
+        }
+
+        function showResult(activityNumber, module) {
+            const resultHTML = `
+                <div class="card result" style="border-color: ${module.color};">
+                    <div class="result-icon" style="background-color: ${module.color}20;">
+                        <span style="color: ${module.color};">${module.icon}</span>
+                    </div>
+                    <h2>¡Tu próxima aventura! 🎉</h2>
+                    <div class="result-number" style="background-color: ${module.color};">
+                        Actividad #${activityNumber}
+                    </div>
+                    <p class="result-module">
+                        <strong>Módulo:</strong> ${module.name}
+                    </p>
+                    <div class="result-examples">
+                        <p>💡 Ejemplos de este módulo:</p>
+                        <p class="examples">${module.examples.join(' • ')}</p>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                        📖 Busca esta actividad en tu guía para ver los detalles completos
+                    </p>
+                </div>
+            `;
+            resultContainer.innerHTML = resultHTML;
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        spinBtn.addEventListener('click', spinWheel);
+    </script>
+</body>
+</html>
